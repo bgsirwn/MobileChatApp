@@ -7,14 +7,13 @@
   </form>
 </template>
 <script>
-/* global myApp, $$ */
+/* global myApp */
 import Vue from 'vue'
+import VueResource from 'vue-resource'
 
-console.log(Vue.config.api_ai_token)
-const API_AI_TOKEN = Vue.config.api_ai_token
+Vue.use(VueResource)
 
 export default {
-  API_AI_TOKEN,
   name: 'ChatInput',
   data () {
     return {
@@ -23,7 +22,7 @@ export default {
       conversationStarted: true,
       botAvatar: 'https://website.smooch.io/static_assets/images/features/bot-avatar.png',
       botName: 'GuruBot',
-      token: API_AI_TOKEN
+      token: this.api_ai_token
     }
   },
   mounted () {
@@ -49,27 +48,21 @@ export default {
         lang: 'en',
         sessionId: '9bc06b9f-5e52-46c2-8b07-6c2f9d4ca0b7' // you probably want to generate this in some sensible way
       }
-      $$.ajax({
-        url: 'https://api.api.ai/api/query',
-        data: data,
-        dataType: 'json',
-        headers: {
-          'Authorization': 'Bearer ' + API_AI_TOKEN
-        },
-        success: function (data) {
-          console.log(data)
+      let vm = this
+      Vue.http.post('query', data)
+        .then(function (response) {
+          let data = response.body
           console.log(data.result.speech)
-          this.messages = myApp.messages('.messages', { autoLayout: true })
-          this.messages.addMessage({
+          vm.messages = myApp.messages('.messages', { autoLayout: true })
+          vm.messages.addMessage({
             text: data.result.speech,
             type: 'received',
-            avatar: this.botAvatar,
-            name: this.botName,
-            day: !this.conversationStarted ? 'Today' : false,
-            time: !this.conversationStarted ? (new Date()).getHours() + ':' + (new Date()).getMinutes() : false
+            avatar: vm.botAvatar,
+            name: vm.botName,
+            day: !vm.conversationStarted ? 'Today' : false,
+            time: !vm.conversationStarted ? (new Date()).getHours() + ':' + (new Date()).getMinutes() : false
           })
-        }
-      })
+        })
     }
   }
 }

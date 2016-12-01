@@ -17,11 +17,18 @@ npm run dev
 
 Open [localhost:8080](http://localhost:8080)
 
-
 Check the readme in `app` for more info
 
 ## Build
 
-```
+For dev we work with the typical VueJS build system. I've made some small tweaks to the config so that it will build to a cordova app.
+
+To test on a phone.
+
+1. Build the app:
 
 ```
+npm run build
+```
+
+This will create a `www` folder in the top level directory. This is your compiled Cordova app.
